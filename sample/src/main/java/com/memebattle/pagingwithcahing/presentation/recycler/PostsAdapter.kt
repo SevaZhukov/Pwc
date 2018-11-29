@@ -21,10 +21,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import com.memebattle.pagingwithcahing.domain.model.db.RedditPost
-import com.memebattle.pwc.domain.util.NetworkState
 import com.memebattle.pagingwithcahing.R
 import com.memebattle.pagingwithrepository.presentation.recycler.viewholder.NetworkStateItemViewHolder
 import com.memebattle.pagingwithrepository.presentation.recycler.viewholder.RedditPostViewHolder
+import com.memebattle.pwc.util.NetworkState
 
 
 /**

@@ -13,7 +13,7 @@ import com.memebattle.pagingwithcahing.R
 import com.memebattle.pagingwithcahing.domain.MainRepository
 import com.memebattle.pagingwithcahing.domain.model.db.RedditPost
 import com.memebattle.pagingwithrepository.presentation.recycler.PostsAdapter
-import com.memebattle.pwc.domain.util.NetworkState
+import com.memebattle.pwc.util.NetworkState
 
 import kotlinx.android.synthetic.main.activity_main.*
 

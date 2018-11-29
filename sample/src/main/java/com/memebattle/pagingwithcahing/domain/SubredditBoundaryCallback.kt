@@ -22,7 +22,7 @@ import com.memebattle.pagingwithcahing.data.api.RedditApi
 import com.memebattle.pagingwithcahing.domain.model.api.ListingResponse
 import com.memebattle.pagingwithcahing.domain.model.db.RedditPost
 import com.memebattle.pagingwithrepository.domain.repository.network.createStatusLiveData
-import com.memebattle.pwc.domain.helper.PagingRequestHelper
+import com.memebattle.pwc.helper.PwcPagingRequestHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,7 +36,7 @@ class SubredditBoundaryCallback(
         private val networkPageSize: Int)
     : PagedList.BoundaryCallback<RedditPost>() {
 
-    val helper = PagingRequestHelper(ioExecutor)
+    val helper = PwcPagingRequestHelper(ioExecutor)
     val networkState = helper.createStatusLiveData()
 
     /**
@@ -44,7 +44,7 @@ class SubredditBoundaryCallback(
      */
     @MainThread
     override fun onZeroItemsLoaded() {
-        helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL) {
+        helper.runIfNotRunning(PwcPagingRequestHelper.RequestType.INITIAL) {
             webservice.getTop(
                     subreddit = subredditName,
                     limit = networkPageSize)
@@ -57,7 +57,7 @@ class SubredditBoundaryCallback(
      */
     @MainThread
     override fun onItemAtEndLoaded(itemAtEnd: RedditPost) {
-        helper.runIfNotRunning(PagingRequestHelper.RequestType.AFTER) {
+        helper.runIfNotRunning(PwcPagingRequestHelper.RequestType.AFTER) {
             webservice.getTopAfter(
                     subreddit = subredditName,
                     after = itemAtEnd.name,
@@ -72,7 +72,7 @@ class SubredditBoundaryCallback(
      */
     private fun insertItemsIntoDb(
             response: Response<ListingResponse>,
-            it: PagingRequestHelper.Request.Callback) {
+            it: PwcPagingRequestHelper.Request.Callback) {
         ioExecutor.execute {
             handleResponse(subredditName, response.body())
             it.recordSuccess()
@@ -83,7 +83,7 @@ class SubredditBoundaryCallback(
         // ignored, since we only ever append to what's in the DB
     }
 
-    private fun createWebserviceCallback(it: PagingRequestHelper.Request.Callback)
+    private fun createWebserviceCallback(it: PwcPagingRequestHelper.Request.Callback)
             : Callback<ListingResponse> {
         return object : Callback<ListingResponse> {
             override fun onFailure(call: Call<ListingResponse>, t: Throwable) {

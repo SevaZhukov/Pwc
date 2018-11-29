@@ -21,7 +21,6 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import com.memebattle.pwc.domain.model.PwcDbModel
 
 @Entity(tableName = "posts",
         indices = [Index(value = ["subreddit"], unique = false)])
@@ -43,11 +42,7 @@ data class RedditPost(
         @SerializedName("created_utc")
         val created: Long,
         val thumbnail: String?,
-        val url: String?) : PwcDbModel<String>() {
+        val url: String?) {
     // to be consistent w/ changing backend order, we need to keep a data like this
     var indexInResponse: Int = -1
-
-    override fun getKey(): String {
-        return name
-    }
 }

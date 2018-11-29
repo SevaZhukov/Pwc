@@ -51,5 +51,5 @@ dependencies {
     //paging
     implementation 'androidx.paging:paging-runtime:2.1.0-beta01'
 
-    implementation 'com.github.MrSwimmer:Pwc:1.0'
+    implementation 'com.github.MrSwimmer:Pwc:1.1'
 }

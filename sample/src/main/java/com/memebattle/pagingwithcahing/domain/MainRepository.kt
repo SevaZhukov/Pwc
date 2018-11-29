@@ -18,8 +18,8 @@ import com.memebattle.pagingwithcahing.data.db.RedditDb
 import com.memebattle.pagingwithcahing.data.db.RedditPostDao
 import com.memebattle.pagingwithcahing.domain.model.api.ListingResponse
 import com.memebattle.pagingwithcahing.domain.model.db.RedditPost
-import com.memebattle.pwc.domain.util.NetworkState
-import com.memebattle.pwc.domain.util.PwcListing
+import com.memebattle.pwc.util.NetworkState
+import com.memebattle.pwc.util.PwcListing
 
 class MainRepository(context: Context) {
 
