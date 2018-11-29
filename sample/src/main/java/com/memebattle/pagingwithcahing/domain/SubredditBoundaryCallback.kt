@@ -14,34 +14,27 @@
  * limitations under the License.
  */
 
-package com.memebattle.pwc.domain.callback
+package com.memebattle.pagingwithcahing.domain
 
 import androidx.paging.PagedList
 import androidx.annotation.MainThread
+import com.memebattle.pagingwithcahing.data.api.RedditApi
+import com.memebattle.pagingwithcahing.domain.model.api.ListingResponse
+import com.memebattle.pagingwithcahing.domain.model.db.RedditPost
+import com.memebattle.pagingwithrepository.domain.repository.network.createStatusLiveData
+import com.memebattle.pwc.domain.helper.PagingRequestHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.Executor
-import com.memebattle.pagingwithrepository.domain.repository.network.createStatusLiveData
-import com.memebattle.pwc.data.PwcApi
-import com.memebattle.pwc.domain.helper.PagingRequestHelper
-import com.memebattle.pwc.domain.model.PwcDbModel
 
-
-/**
- * This boundary callback gets notified when user reaches to the edges of the list such that the
- * database cannot provide any more data.
- * <p>
- * The boundary callback might be called multiple times for the same direction so it does its own
- * rate limiting using the com.memebattle.pagingwithrepository.domain.util.PagingRequestHelper class.
- */
-class PwcBoundaryCallback<ApiModel, Key>(
+class SubredditBoundaryCallback(
         private val subredditName: String,
-        private val webservice: PwcApi<ApiModel, Key>,
-        private val handleResponse: (String, ApiModel?) -> Unit,
+        private val webservice: RedditApi,
+        private val handleResponse: (String, ListingResponse?) -> Unit,
         private val ioExecutor: Executor,
         private val networkPageSize: Int)
-    : PagedList.BoundaryCallback<PwcDbModel<Key>>() {
+    : PagedList.BoundaryCallback<RedditPost>() {
 
     val helper = PagingRequestHelper(ioExecutor)
     val networkState = helper.createStatusLiveData()
@@ -53,7 +46,7 @@ class PwcBoundaryCallback<ApiModel, Key>(
     override fun onZeroItemsLoaded() {
         helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL) {
             webservice.getTop(
-                    path = subredditName,
+                    subreddit = subredditName,
                     limit = networkPageSize)
                     .enqueue(createWebserviceCallback(it))
         }
@@ -63,11 +56,11 @@ class PwcBoundaryCallback<ApiModel, Key>(
      * User reached to the end of the list.
      */
     @MainThread
-    override fun onItemAtEndLoaded(itemAtEnd: PwcDbModel<Key>) {
+    override fun onItemAtEndLoaded(itemAtEnd: RedditPost) {
         helper.runIfNotRunning(PagingRequestHelper.RequestType.AFTER) {
             webservice.getTopAfter(
-                    path = subredditName,
-                    after = itemAtEnd.getKey(),
+                    subreddit = subredditName,
+                    after = itemAtEnd.name,
                     limit = networkPageSize)
                     .enqueue(createWebserviceCallback(it))
         }
@@ -78,7 +71,7 @@ class PwcBoundaryCallback<ApiModel, Key>(
      * paging library takes care of refreshing the list if necessary.
      */
     private fun insertItemsIntoDb(
-            response: Response<ApiModel>,
+            response: Response<ListingResponse>,
             it: PagingRequestHelper.Request.Callback) {
         ioExecutor.execute {
             handleResponse(subredditName, response.body())
@@ -86,20 +79,20 @@ class PwcBoundaryCallback<ApiModel, Key>(
         }
     }
 
-    override fun onItemAtFrontLoaded(itemAtFront: PwcDbModel<Key>) {
+    override fun onItemAtFrontLoaded(itemAtFront: RedditPost) {
         // ignored, since we only ever append to what's in the DB
     }
 
     private fun createWebserviceCallback(it: PagingRequestHelper.Request.Callback)
-            : Callback<ApiModel> {
-        return object : Callback<ApiModel> {
-            override fun onFailure(call: Call<ApiModel>, t: Throwable) {
+            : Callback<ListingResponse> {
+        return object : Callback<ListingResponse> {
+            override fun onFailure(call: Call<ListingResponse>, t: Throwable) {
                 it.recordFailure(t)
             }
 
             override fun onResponse(
-                    call: Call<ApiModel>,
-                    response: Response<ApiModel>) {
+                    call: Call<ListingResponse>,
+                    response: Response<ListingResponse>) {
                 insertItemsIntoDb(response, it)
             }
         }

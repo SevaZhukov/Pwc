@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.memebattle.pwc.domain.util
+package com.memebattle.pagingwithcahing.data.db
 
-enum class Status {
-    RUNNING,
-    SUCCESS,
-    FAILED
-}
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import com.memebattle.pagingwithcahing.domain.model.db.RedditPost
 
-@Suppress("DataClassPrivateConstructor")
-data class NetworkState private constructor(
-        val status: Status,
-        val msg: String? = null) {
-    companion object {
-        val LOADED = NetworkState(Status.SUCCESS)
-        val LOADING = NetworkState(Status.RUNNING)
-        fun error(msg: String?) = NetworkState(Status.FAILED, msg)
-    }
+/**
+ * Database schema used by the DbRedditPostRepository
+ */
+@Database(
+        entities = [RedditPost::class],
+        version = 1,
+        exportSchema = false
+)
+abstract class RedditDb : RoomDatabase() {
+
+    abstract fun posts(): RedditPostDao
 }

@@ -2,16 +2,16 @@ package com.memebattle.pagingwithrepository.domain.repository.network
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.memebattle.pwc.domain.helper.PagingRequestHelper
-import com.memebattle.pwc.domain.util.NetworkState
+import com.memebattle.pwc.helper.PwcPagingRequestHelper
+import com.memebattle.pwc.util.NetworkState
 
-private fun getErrorMessage(report: PagingRequestHelper.StatusReport): String {
-    return PagingRequestHelper.RequestType.values().mapNotNull {
+private fun getErrorMessage(report: PwcPagingRequestHelper.StatusReport): String {
+    return PwcPagingRequestHelper.RequestType.values().mapNotNull {
         report.getErrorFor(it)?.message
     }.first()
 }
 
-fun PagingRequestHelper.createStatusLiveData(): LiveData<NetworkState> {
+fun PwcPagingRequestHelper.createStatusLiveData(): LiveData<NetworkState> {
     val liveData = MutableLiveData<NetworkState>()
     addListener { report ->
         when {

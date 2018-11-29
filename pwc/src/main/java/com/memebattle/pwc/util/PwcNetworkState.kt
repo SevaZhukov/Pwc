@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package com.memebattle.pagingwithrepository.domain.repository.core
+package com.memebattle.pwc.util
 
-import com.memebattle.pwc.domain.util.PwcListing
+enum class Status {
+    RUNNING,
+    SUCCESS,
+    FAILED
+}
 
-/**
- * Common interface shared by the different repository implementations.
- * Note: this only exists for sample purposes - typically an app would implement a repo once, either
- * network+db, or network-only
- */
-interface PwcRepository<T> {
-    fun postsOfSubreddit(subReddit: String, pageSize: Int): PwcListing<T>
+@Suppress("DataClassPrivateConstructor")
+data class NetworkState private constructor(
+        val status: Status,
+        val msg: String? = null) {
+    companion object {
+        val LOADED = NetworkState(Status.SUCCESS)
+        val LOADING = NetworkState(Status.RUNNING)
+        fun error(msg: String?) = NetworkState(Status.FAILED, msg)
+    }
 }

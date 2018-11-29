@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.memebattle.pwc.domain.util
+package com.memebattle.pwc.util
 
 import androidx.lifecycle.LiveData
 import androidx.paging.PagedList

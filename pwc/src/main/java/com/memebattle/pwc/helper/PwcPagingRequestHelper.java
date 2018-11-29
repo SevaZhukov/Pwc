@@ -1,4 +1,4 @@
-package com.memebattle.pwc.domain.helper;/*
+package com.memebattle.pwc.helper;/*
  * Copyright 2017 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,13 +41,13 @@ import androidx.paging.DataSource;
  * class PagingBoundaryCallback extends PagedList.BoundaryCallback&lt;MyItem> {
  *     // TODO replace with an executor from your application
  *     Executor executor = Executors.newSingleThreadExecutor();
- *     com.memebattle.pagingwithrepository.domain.util.PagingRequestHelper helper = new com.memebattle.pagingwithrepository.domain.util.PagingRequestHelper(executor);
+ *     com.memebattle.pagingwithrepository.domain.util.PwcPagingRequestHelper helper = new com.memebattle.pagingwithrepository.domain.util.PwcPagingRequestHelper(executor);
  *     // imaginary API service, using Retrofit
  *     MyApi api;
  *
  *     {@literal @}Override
  *     public void onItemAtFrontLoaded({@literal @}NonNull MyItem itemAtFront) {
- *         helper.runIfNotRunning(com.memebattle.pagingwithrepository.domain.util.PagingRequestHelper.RequestType.BEFORE,
+ *         helper.runIfNotRunning(com.memebattle.pagingwithrepository.domain.util.PwcPagingRequestHelper.RequestType.BEFORE,
  *                 helperCallback -> api.getTopBefore(itemAtFront.getName(), 10).enqueue(
  *                         new Callback&lt;ApiResponse>() {
  *                             {@literal @}Override
@@ -66,7 +66,7 @@ import androidx.paging.DataSource;
  *
  *     {@literal @}Override
  *     public void onItemAtEndLoaded({@literal @}NonNull MyItem itemAtEnd) {
- *         helper.runIfNotRunning(com.memebattle.pagingwithrepository.domain.util.PagingRequestHelper.RequestType.AFTER,
+ *         helper.runIfNotRunning(com.memebattle.pagingwithrepository.domain.util.PwcPagingRequestHelper.RequestType.AFTER,
  *                 helperCallback -> api.getTopBefore(itemAtEnd.getName(), 10).enqueue(
  *                         new Callback&lt;ApiResponse>() {
  *                             {@literal @}Override
@@ -88,24 +88,24 @@ import androidx.paging.DataSource;
  * The helper provides an API to observe combined request status, which can be reported back to the
  * application based on your business rules.
  * <pre>
- * MutableLiveData&lt;com.memebattle.pagingwithrepository.domain.util.PagingRequestHelper.Status> combined = new MutableLiveData&lt;>();
+ * MutableLiveData&lt;com.memebattle.pagingwithrepository.domain.util.PwcPagingRequestHelper.Status> combined = new MutableLiveData&lt;>();
  * helper.addListener(status -> {
  *     // merge multiple states per request type into one, or dispatch separately depending on
  *     // your application logic.
  *     if (status.hasRunning()) {
- *         combined.postValue(com.memebattle.pagingwithrepository.domain.util.PagingRequestHelper.Status.RUNNING);
+ *         combined.postValue(com.memebattle.pagingwithrepository.domain.util.PwcPagingRequestHelper.Status.RUNNING);
  *     } else if (status.hasError()) {
  *         // can also obtain the error via {@link StatusReport#getErrorFor(RequestType)}
- *         combined.postValue(com.memebattle.pagingwithrepository.domain.util.PagingRequestHelper.Status.FAILED);
+ *         combined.postValue(com.memebattle.pagingwithrepository.domain.util.PwcPagingRequestHelper.Status.FAILED);
  *     } else {
- *         combined.postValue(com.memebattle.pagingwithrepository.domain.util.PagingRequestHelper.Status.SUCCESS);
+ *         combined.postValue(com.memebattle.pagingwithrepository.domain.util.PwcPagingRequestHelper.Status.SUCCESS);
  *     }
  * });
  * </pre>
  */
 // THIS class is likely to be moved into the library in a future release. Feel free to copy it
 // from this sample.
-public class PagingRequestHelper {
+public class PwcPagingRequestHelper {
     private final Object mLock = new Object();
     private final Executor mRetryService;
     @GuardedBy("mLock")
@@ -116,12 +116,12 @@ public class PagingRequestHelper {
     @NonNull
     final CopyOnWriteArrayList<Listener> mListeners = new CopyOnWriteArrayList<>();
     /**
-     * Creates a new com.memebattle.pagingwithrepository.domain.util.PagingRequestHelper with the given {@link Executor} which is used to run
+     * Creates a new com.memebattle.pagingwithrepository.domain.util.PwcPagingRequestHelper with the given {@link Executor} which is used to run
      * retry actions.
      *
      * @param retryService The {@link Executor} that can run the retry actions.
      */
-    public PagingRequestHelper(@NonNull Executor retryService) {
+    public PwcPagingRequestHelper(@NonNull Executor retryService) {
         mRetryService = retryService;
     }
     /**
@@ -252,10 +252,10 @@ public class PagingRequestHelper {
         @NonNull
         final Request mRequest;
         @NonNull
-        final PagingRequestHelper mHelper;
+        final PwcPagingRequestHelper mHelper;
         @NonNull
         final RequestType mType;
-        RequestWrapper(@NonNull Request request, @NonNull PagingRequestHelper helper,
+        RequestWrapper(@NonNull Request request, @NonNull PwcPagingRequestHelper helper,
                 @NonNull RequestType type) {
             mRequest = request;
             mHelper = helper;
@@ -275,11 +275,11 @@ public class PagingRequestHelper {
         }
     }
     /**
-     * Runner class that runs a request tracked by the {@link PagingRequestHelper}.
+     * Runner class that runs a request tracked by the {@link PwcPagingRequestHelper}.
      * <p>
      * When a request is invoked, it must call one of {@link Callback#recordFailure(Throwable)}
      * or {@link Callback#recordSuccess()} once and only once. This call
-     * can be made any time. Until that method call is made, {@link PagingRequestHelper} will
+     * can be made any time. Until that method call is made, {@link PwcPagingRequestHelper} will
      * consider the request is running.
      */
     @FunctionalInterface
@@ -297,8 +297,8 @@ public class PagingRequestHelper {
         class Callback {
             private final AtomicBoolean mCalled = new AtomicBoolean();
             private final RequestWrapper mWrapper;
-            private final PagingRequestHelper mHelper;
-            Callback(RequestWrapper wrapper, PagingRequestHelper helper) {
+            private final PwcPagingRequestHelper mHelper;
+            Callback(RequestWrapper wrapper, PwcPagingRequestHelper helper) {
                 mWrapper = wrapper;
                 mHelper = helper;
             }
