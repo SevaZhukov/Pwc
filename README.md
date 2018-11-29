@@ -42,3 +42,7 @@ It tracks a Status and an error for each RequestType.
 ### Usage Sample
 
 Check package 'sample' of this repository
+
+### How it works?
+
+Check this [post](https://habr.com/post/431212/) on Habr.com
